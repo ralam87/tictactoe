@@ -172,10 +172,11 @@ h1 {
 
 	/* MY STYLES */
 	
-	#nameEntry {
+	#nameEntry, #nameEntry2 {
 		display: block;
 		padding: 10px;
 		margin: auto;
+		margin-bottom: 10px;
 		border: none;
 		border-radius: 5px;
 	}

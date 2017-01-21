@@ -13,20 +13,30 @@ var ticTacToe  = (function game() {
 
 		var playerInput = document.getElementById("nameEntry");
 		var playerName = playerInput.value;
+		var playerInput2 = document.getElementById("nameEntry2");
+		var playerName2 = playerInput2.value;
 		var secondGame = false; //when set true by new game function, doesn't allow playerName to be duplicated. 
 
 		function showName() {
 			if (secondGame === false) {
 				if (playerInput.value.length === 0) 	{ //if no name is entered, it is set to default "Player1"
 					playerName = "Player1";
-					
 				} 	else 	{
 					playerName = playerInput.value;
-					
 					}
+				if (playerInput2.value.length === 0) 	{ //if no name is entered, it is set to default "Player1"
+					playerName2 = "Player2";
+				} 	else 	{
+					playerName2 = playerInput2.value;
+					}
+					
 					var nameLabel = document.createElement("label");
-				$('#player1').append(nameLabel);
-				nameLabel.innerHTML = playerName;
+					$('#player1').append(nameLabel);
+					nameLabel.innerHTML = playerName;
+					var nameLabel2 = document.createElement("label");
+				$('#player2').append(nameLabel2);
+					nameLabel2.innerHTML = playerName2;
+				
 			}
 		}
 
