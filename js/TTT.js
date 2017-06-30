@@ -1,211 +1,182 @@
 // Javascript code for TIC TAC TOE 2017 Ruhull Alam
+//Currently no CPU option;
 
-//Contents
-		// Name Input Functions : This is for the name input upon load
-		// Start Game Functions : This replaces the name/title screen with the actual game board screen
-		// Turn functions : This holds the functions records the turns and so changes player icons, it also allows the functions that print the 'watermark' and remove if during/after hover
-		// Game functions: These functions set the rules, so the computer knows what to look for if a player gets 3 in a row, it also sets the winner screen, and a new game function
-		
-		//Currently no CPU option;
+var ticTacToe = (function game() {
+	var playerInput = document.getElementById("nameEntry")
+	var playerInput2 = document.getElementById("nameEntry2")
+	var playerName = playerInput.value
+	var playerName2 = playerInput2.value
+	var secondGame = false
+	var turn
 
-//////////Name Input functions//////////
-var ticTacToe  = (function game() {
+	function showName() {
+		if (!secondGame) {
 
-		var playerInput = document.getElementById("nameEntry");
-		var playerName = playerInput.value;
-		var playerInput2 = document.getElementById("nameEntry2");
-		var playerName2 = playerInput2.value;
-		var secondGame = false; //when set true by new game function, doesn't allow playerName to be duplicated. 
-
-		function showName() {
-			if (secondGame === false) {
-				if (playerInput.value.length === 0) 	{ //if no name is entered, it is set to default "Player1"
-					playerName = "Player1";
-				} 	else 	{
-					playerName = playerInput.value;
-					}
-				if (playerInput2.value.length === 0) 	{ //if no name is entered, it is set to default "Player1"
-					playerName2 = "Player2";
-				} 	else 	{
-					playerName2 = playerInput2.value;
-					}
-					
-					var nameLabel = document.createElement("label");
-					$('#player1').append(nameLabel);
-					nameLabel.innerHTML = playerName;
-					var nameLabel2 = document.createElement("label");
-				$('#player2').append(nameLabel2);
-					nameLabel2.innerHTML = playerName2;
-				
+			if (!playerInput.value) {
+				playerName = "Player1"
+			}	else {
+				playerName = playerInput.value;
 			}
+
+			if (!playerInput2.value) {
+				playerName2 = "Player2"
+			}	else {
+				playerName2 = playerInput2.value
+			}
+
+		var nameLabel = document.createElement("label")
+		var nameLabel2 = document.createElement("label")
+
+		$('#player1').append(nameLabel)
+		$('#player2').append(nameLabel2)
+
+		nameLabel2.innerHTML = playerName2
+		nameLabel.innerHTML = playerName
 		}
+	}
 
-		//////////End of Name Input function//////////
+	var startButton = document.querySelector(".button")
+	startButton.addEventListener("click", startGame)
 
-		////////////////Start Game function////////////
+	function startGame() {
+		showName()
+		document.querySelector("#start").style.display = "none"
+		document.querySelector(".board").style.display = "block"
+		toggleClass((Math.floor(Math.random() * 2) + 1))
+	};
 
-		var startButton = document.getElementsByClassName("button")[0];
-		startButton.addEventListener("click", startGame)
+	function toggleClass(i) {
+		var j;
 
-		function startGame() {
-			showName() 
-			document.getElementById("start").style.display = "none";
-			document.getElementsByClassName("board")[0].style.display = "block";
-			toggleClass((Math.floor(Math.random() * 2) + 1)); //random player to start initially
-		};
+		if (i === 1) {
+			j = 2
+		} else {
+			j = 1
+		}
+		$('#player'+i).toggleClass('active')
 
-		///////////End of Start Game function///////
+		if ($('#player'+i).hasClass('active')) {
+			$('#player'+j).toggleClass('active', false)
+			imageAssigner(j)
+		}
+	}
 
+	function imageAssigner(j) {
+		if (j === 2) {
+			turn = "url(img/o.svg)"
+		} else {
+			turn = "url(img/x.svg)"
+		}
+	}
 
-		/////////////////Turn functions/////////////////
+	for (i = 0; i < 9; i++) {
+		var boxes = document.getElementsByClassName("box")[i]
+		boxes.addEventListener("mouseenter", mark)
+		boxes.addEventListener("click", confirmMove)
+		boxes.addEventListener("mouseleave", removeMark)
+	}
 
-		function toggleClass(i) { //function that ensures the active class is set and removed alternating between turns. 
-			var j;
-			
-			if (i === 1) { 
-				j =2
+	function mark() {
+		if (this.innerHTML === "") {
+			this.style.backgroundImage = turn
+			this.style.color = "#EFEFEF"
+		}
+	}
+
+	function removeMark() {
+		if (this.innerHTML === "") {
+			this.style.backgroundImage = "none"
+			this.style.backgroundColor = "#EFEFEF"
+		}
+	}
+
+	function confirmMove() {
+		if (this.innerHTML === "") {
+			if (turn ==="url(img/o.svg)") {
+				this.innerHTML = "o"
+				this.style.backgroundImage = "url(img/o.svg)"
+				this.style.backgroundColor = "#FFA000"
+
+				maxTurns++;
+				checkWin("o")
+				toggleClass(2)
 			} else {
-				j = 1;
-			}
-			$('#player'+i).toggleClass('active');
-			
-			
-			if ($('#player'+i).hasClass('active')) {
-				$('#player'+j).toggleClass('active', false);
-				imageAssigner(j)
-				}  
-			
-		};
+				this.innerHTML = "x"
+				this.style.backgroundImage = "url(img/x.svg)"
+				this.style.backgroundColor = "#3688C3"
 
-		var turn;
-		function imageAssigner(j){
-			if (j === 2) {
-				turn = "url(img/o.svg)";
-			} else {
-				 turn = "url(img/x.svg)";
-				}
-		}
-
-
-		for (i = 0; i < 9; i++) { //adds an event listener for each box, and calls relevant function linked to whatever mouse event
-			var boxes = document.getElementsByClassName("box")[i];
-				boxes.addEventListener("mouseenter", mark); //'watermarks' the current player symbol on the square
-				boxes.addEventListener("click", confirmMove);	
-				boxes.addEventListener("mouseleave", removeMark); //removes the current player symbol 'watermark' on the square
-		}
-
-
-		function mark() {
-			if (this.innerHTML === "") {
-				this.style.backgroundImage = turn;
-				this.style.color = "#EFEFEF";
+				maxTurns++
+				checkWin("x")
+				toggleClass(1)
 			}
 		}
-			
-		function removeMark() {
-			if (this.innerHTML === "") {
-				this.style.backgroundImage = "none";
-				this.style.backgroundColor =  "#EFEFEF";
-				} 
-			} 
-			
-		function confirmMove() {
-			if (this.innerHTML === "") {
-				if (turn ==="url(img/o.svg)") {
-					this.innerHTML = "o";
-					this.style.backgroundImage = "url(img/o.svg)";
-					this.style.backgroundColor = "#FFA000"
-					
-						maxTurns++;
-						checkWin("o")
-						toggleClass(2);
-						
-					
-				} else {
-					this.innerHTML = "x";
-					this.style.backgroundImage = "url(img/x.svg)";
-					this.style.backgroundColor = "#3688C3"
-					
-						maxTurns++;
-						checkWin("x")
-						toggleClass(1);
-						
-				}
-			}
-		};
+	}
 
-		/////////////////End of Turn functions/////////////////
-
-		///////////////////Game functions ///////////////////
-		var maxTurns = 0;
-		var listBoxes = document.getElementsByClassName("box");
-		var winScreen = document.getElementById("finish");
+		var maxTurns = 0
+		var listBoxes = document.getElementsByClassName("box")
+		var winScreen = document.getElementById("finish")
 
 		function showWinScreen(value) {
-			document.getElementById("board").style.display = "none";
-			document.getElementById("finish").style.display = "inline";
-					 if (value === "o") {
-						document.getElementById("finish").style.backgroundColor = "#FFA000";
-						winScreen.style.backgroundImage = "url(img/o.svg)";
-						document.getElementsByClassName("message")[0].innerHTML = playerName + " is winner!";
-					} else if (value === "x") {
-						winScreen.style.backgroundImage = "url(img/x.svg)";
-						document.getElementById("finish").style.backgroundColor = "#3688C3";
-						document.getElementsByClassName("message")[0].innerHTML = "Player2 is Winner!";
-					} else {
-					document.getElementById("finish").style.backgroundColor = "#54D17A";
-					
-					winScreen.style.backgroundImage = "none";
-					document.getElementsByClassName("message")[0].innerHTML = "DRAW";
-					
-				} 
-					
-		}
+			document.querySelector("#board").style.display = "none"
+			document.querySelector("#finish").style.display = "inline"
 
-		function checkWin(value) {
-			//horizontal wins
-			if (listBoxes[0].innerHTML === value && listBoxes[1].innerHTML === value && listBoxes[2].innerHTML === value ) {
-				 showWinScreen(value);
-			} else if (listBoxes[3].innerHTML === value && listBoxes[4].innerHTML === value && listBoxes[5].innerHTML === value ) {
-			 showWinScreen(value);
-				} else if (listBoxes[6].innerHTML === value && listBoxes[7].innerHTML === value && listBoxes[8].innerHTML === value ) {
-			 showWinScreen(value);
-			 
-					} //vertical wins
-			else if (listBoxes[0].innerHTML === value && listBoxes[3].innerHTML === value && listBoxes[6].innerHTML === value ) {
-			 showWinScreen(value);
-			}	else if (listBoxes[1].innerHTML === value && listBoxes[4].innerHTML === value && listBoxes[7].innerHTML === value ) {
-			 showWinScreen(value);
-			}	else if (listBoxes[2].innerHTML === value && listBoxes[5].innerHTML === value && listBoxes[8].innerHTML === value ) {
-			 showWinScreen(value);
-			 
-			}	//diagonal wins	
-			else if (listBoxes[0].innerHTML === value && listBoxes[4].innerHTML === value && listBoxes[8].innerHTML === value ) {
-			 showWinScreen(value);
-			}	else if (listBoxes[2].innerHTML === value && listBoxes[4].innerHTML === value && listBoxes[6].innerHTML === value ) {
-			 showWinScreen(value);
-			 
-			 //tie situation
-			} else if (maxTurns === 9) {
-					showWinScreen();
-			}; 
-			
+			if (value === "o") {
+				document.querySelector("#finish").style.backgroundColor = "#FFA000"
+				winScreen.style.backgroundImage = "url(img/o.svg)"
+				document.querySelector(".message").innerHTML = playerName + " is winner!"
+			} else if (value === "x") {
+				winScreen.style.backgroundImage = "url(img/x.svg)"
+				document.querySelector("#finish").style.backgroundColor = "#3688C3"
+				document.querySelector(".message").innerHTML = "Player2 is Winner!"
+			} else {
+				document.querySelector("#finish").style.backgroundColor = "#54D17A"
+				winScreen.style.backgroundImage = "none"
+				document.querySelector(".message").innerHTML = "DRAW"
 		}
+	}
 
-		var newGameButton = document.getElementsByClassName("button")[1]
-		newGameButton.addEventListener("click", newGame);
-		
-		function newGame() {
-			for (i = 0; i < 9; i++) { 
-				var boxes = document.getElementsByClassName("box")[i];
-					boxes.innerHTML= ""; //resets each box, removes value from previous game
-					boxes.style.backgroundImage = "none"; //resets the neccessary screens
-					boxes.style.backgroundColor = "#EFEFEF";
-					}
-				document.getElementById("finish").style.display = "none";//resets the neccessary screens
-				maxTurns = 0; //resets the number of turns played.
-				secondGame = true;
-				startGame()
-					}
-		
-} ());
+	function checkWin(value) {
+		//horizontal wins
+		if (listBoxes[0].innerHTML === value && listBoxes[1].innerHTML === value && listBoxes[2].innerHTML === value ) {
+		 showWinScreen(value)
+		} else if (listBoxes[3].innerHTML === value && listBoxes[4].innerHTML === value && listBoxes[5].innerHTML === value ) {
+		 showWinScreen(value)
+		} else if (listBoxes[6].innerHTML === value && listBoxes[7].innerHTML === value && listBoxes[8].innerHTML === value ) {
+		 showWinScreen(value)
+		}
+		//vertical wins
+		else if (listBoxes[0].innerHTML === value && listBoxes[3].innerHTML === value && listBoxes[6].innerHTML === value ) {
+		 showWinScreen(value)
+		}	else if (listBoxes[1].innerHTML === value && listBoxes[4].innerHTML === value && listBoxes[7].innerHTML === value ) {
+		 showWinScreen(value)
+		}	else if (listBoxes[2].innerHTML === value && listBoxes[5].innerHTML === value && listBoxes[8].innerHTML === value ) {
+		 showWinScreen(value)
+		}
+		//diagonal wins
+		else if (listBoxes[0].innerHTML === value && listBoxes[4].innerHTML === value && listBoxes[8].innerHTML === value ) {
+		 showWinScreen(value)
+		}	else if (listBoxes[2].innerHTML === value && listBoxes[4].innerHTML === value && listBoxes[6].innerHTML === value ) {
+		 showWinScreen(value)
+	 	}
+		//tie situation
+		else if (maxTurns === 9) {
+			showWinScreen()
+		}
+	}
+
+	var newGameButton = document.querySelectorAll(".button")[1]
+	newGameButton.addEventListener("click", newGame)
+
+	function newGame() {
+		for (i = 0; i < 9; i++) {
+			var boxes = document.querySelectorAll(".box")[i]
+			boxes.innerHTML= ""
+			boxes.style.backgroundImage = "none"
+			boxes.style.backgroundColor = "#EFEFEF"
+		}
+		document.querySelector("#finish").style.display = "none"
+		maxTurns = 0
+		secondGame = true
+		startGame()
+	}
+}())
